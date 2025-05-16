@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accident Detection Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f5f5f5;
+        }
+        .result-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .image-box {
+            margin: 10px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            max-width: 45%;
+        }
+        .image-box h3 {
+            margin: 10px 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .detection-result {
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .accident {
+            background-color: #ffcccc;
+            color: #cc0000;
+        }
+        .no-accident {
+            background-color: #ccffcc;
+            color: #007700;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1>Accident Detection Result</h1>
+        
+        {% if has_accident %}
+            <div class="detection-result accident">
+                Accident Detected!
+            </div>
+        {% else %}
+            <div class="detection-result no-accident">
+                No Accident Detected
+            </div>
+        {% endif %}
+        
+        {% if file_type == 'image' %}
+            <div class="image-container">
+                <div class="image-box">
+                    <h3>Original Image</h3>
+                    <img src="{{ url_for('uploaded_file', filename=original_filename) }}" alt="Original Image">
+                </div>
+                <div class="image-box">
+                    <h3>Analyzed Image</h3>
+                    <img src="{{ url_for('uploaded_file', filename=result_filename) }}" alt="Analysis Result">
+                </div>
+            </div>
+        {% elif file_type == 'video' %}
+            <h3>Processed Video</h3>
+            <video width="720" controls>
+                <source src="{{ url_for('uploaded_file', filename=result_filename) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p>
+                <a href="{{ url_for('uploaded_file', filename=result_filename) }}" download class="button">
+                    Download Processed Video
+                </a>
+            </p>
+        {% endif %}
+        
+        <p>
+            <a href="{{ url_for('index') }}" class="button">
+                Process Another File
+            </a>
+        </p>
+    </div>
+</body>
+</html>
