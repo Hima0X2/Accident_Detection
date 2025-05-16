@@ -1,0 +1,6 @@
+Flask
+torch
+tensorflow
+opencv-python
+numpy
+Pillow
