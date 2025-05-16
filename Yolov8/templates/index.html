@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accident Detection System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(120deg, #3a7bd5, #00d2ff);
+            padding: 25px 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .upload-container {
+            border: 2px dashed #d1d9e6;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            background: #f8faff;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .upload-container:hover {
+            border-color: #3a7bd5;
+            background: #f0f5ff;
+        }
+
+        .upload-container.active {
+            border-color: #4caf50;
+            background: #f1f8e9;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #3a7bd5;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(120deg, #3a7bd5, #00d2ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(120deg, #2a6ac0, #00b8e6);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .alert-container {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .alert-danger {
+            background-color: #fff5f5;
+            border: 1px solid #ffebee;
+            color: #d32f2f;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .alert-message {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .filename {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            word-break: break-all;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .card-header {
+                padding: 20px;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            .card-header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Accident Detection System</h1>
+                <p>Upload media for real-time accident analysis</p>
+            </div>
+            
+            <div class="card-body">
+                <form action="/upload" method="POST" enctype="multipart/form-data" id="upload-form">
+                    <div class="upload-container" id="upload-area">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drag & drop or click to upload</div>
+                        <div class="upload-hint">Supports images (JPG, PNG) and videos (MP4, AVI)</div>
+                        <input type="file" name="file" id="file-input" class="file-input" accept="image/*, video/*" required>
+                    </div>
+                    
+                    <div class="file-preview" id="preview-area">
+                        <img src="" alt="Preview" class="preview-img" id="preview-img">
+                        <div class="filename" id="filename-display"></div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Analyze</button>
+                </form>
+                
+                {% if message %}
+                <div class="alert-container alert-danger">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-message">{{ message }}</div>
+                </div>
+                {% if alert %}
+                <audio autoplay>
+                    <source src="alert_sound.mp3" type="audio/mp3">
+                </audio>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+        const previewArea = document.getElementById('preview-area');
+        const previewImg = document.getElementById('preview-img');
+        const filenameDisplay = document.getElementById('filename-display');
+        
+        fileInput.addEventListener('change', function(e) {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                filenameDisplay.textContent = file.name;
+                
+                uploadArea.classList.add('active');
+                
+                // Show preview for images
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewArea.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    // For videos, show a placeholder or icon
+                    previewImg.src = 'video-placeholder.png'; // Replace with your video icon
+                    previewArea.style.display = 'block';
+                }
+            } else {
+                uploadArea.classList.remove('active');
+                previewArea.style.display = 'none';
+            }
+        });
+        
+        // Prevent browser default drag behavior
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.classList.add('active');
+        }
+        
+        function unhighlight() {
+            uploadArea.classList.remove('active');
+        }
+        
+        // Handle dropped files
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            
+            // Trigger change event
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        }
+    </script>
+</body>
+</html>
